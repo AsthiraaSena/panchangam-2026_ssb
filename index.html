@@ -214,7 +214,7 @@ async function loadData(offset = 0){
     rows.forEach(r=>{
       tbody.innerHTML += `
         <tr>
-          <td>🪐 ${r.Planet}</td>
+          <td>${r.Planet}</td>
           <td>${r["D.M.S"]}</td>
           <td>${r.Sign}</td>
           <td>${r.Star}</td>
