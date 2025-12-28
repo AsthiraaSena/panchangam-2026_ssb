@@ -3,77 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DailyPlanet Transit</title>
+<title>Daily Planet Transit</title>
 
 <style>
+/* ================= BASE ================= */
 body{
-font-family:system-ui;
-padding:16px;
-background:#f4f6fb;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  padding:8px;
+  margin:0;
+  background:#f4f6fb;
+  color:#222;
 }
 
-h2{text-align:center}
-
-input,button{
-width:100%;
-padding:12px;
-margin:8px 0;
-font-size:16px;
+h2{
+  text-align:center;
+  margin:6px 0 8px;
+  font-size:18px;
+  font-weight:600;
 }
 
-button{
-background:#243c8f;
-color:white;
-border:none;
+/* ================= CONTROLS ================= */
+.controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  max-width:420px;
+  margin:0 auto 8px;
 }
 
+.controls input{
+  flex:1;
+  height:36px;
+  padding:6px 8px;
+  font-size:14px;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+
+.controls button{
+  width:96px;
+  height:36px;
+  font-size:14px;
+  background:#243c8f;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.controls button:active{
+  transform:scale(0.97);
+}
+
+/* ================= INFO ================= */
 #info{
-margin:10px 0;
-font-weight:600;
-text-align:center;
+  margin:6px 0;
+  font-weight:600;
+  text-align:center;
+  font-size:13px;
 }
 
+/* ================= TABLE ================= */
 table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
-font-size:14px;
+  width:100%;
+  border-collapse:collapse;
+  margin-top:4px;
+  font-size:12px;
+  background:#fff;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:8px;
-text-align:center;
+th, td{
+  border:1px solid #ccc;
+  padding:4px 5px;
+  text-align:center;
+  line-height:1.2;
+  white-space:nowrap;
 }
 
 th{
-background:#243c8f;
-color:white;
+  background:#243c8f;
+  color:#fff;
+  font-weight:600;
+}
+
+/* ================= LOADER ================= */
+.loader{
+  width:16px;
+  height:16px;
+  border:3px solid #fff;
+  border-top:3px solid transparent;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  display:inline-block;
+  vertical-align:middle;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
+
+button.loading{
+  pointer-events:none;
+  opacity:0.85;
+}
+
+.loading-row{
+  font-weight:600;
+  color:#555;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width:480px){
+  h2{ font-size:16px; }
+
+  .controls{
+    gap:6px;
+  }
+
+  .controls button{
+    width:80px;
+    font-size:13px;
+  }
+
+  table{
+    font-size:11px;
+  }
+
+  th, td{
+    padding:3px;
+  }
 }
 </style>
-
 </head>
+
 <body>
 
 <h2>🪐 Planet Transit</h2>
 
 <div class="controls">
   <input type="date" id="dateInput">
-  <button onclick="loadData()">Show</button>
+  <button id="showBtn" onclick="loadData()">Show</button>
 </div>
-
 
 <div id="info"></div>
 
 <table>
 <thead>
 <tr>
-<th>Planet</th>
-<th>D.M.S</th>
-<th>Sign</th>
-<th>Star</th>
-<th>Sub</th>
-<th>S.Time</th>
+  <th>Planet</th>
+  <th>D.M.S</th>
+  <th>Sign</th>
+  <th>Star</th>
+  <th>Sub</th>
+  <th>S.Time</th>
 </tr>
 </thead>
 <tbody id="tbody">
@@ -82,50 +164,93 @@ color:white;
 </table>
 
 <script>
-async function loadData(){
+let currentDate = null;
 
-  const input = document.getElementById("dateInput").value;
-  if(!input){
-    alert("Select date");
-    return;
-  }
+async function loadData(offset = 0){
 
-  // YYYY-MM-DD → DD-MM-YYYY
-  const [y,m,d] = input.split("-");
-  const selectedDate = `${d}-${m}-${y}`;
-
-  const res = await fetch("panchangam_2026.json");
-  const data = await res.json();
-
+  const dateInput = document.getElementById("dateInput");
+  const btn = document.getElementById("showBtn");
   const tbody = document.getElementById("tbody");
   const info = document.getElementById("info");
-  tbody.innerHTML = "";
-  info.innerHTML = "";
 
-  const rows = data.filter(r => r.Date === selectedDate);
-
-  if(rows.length === 0){
-    tbody.innerHTML =
-      `<tr><td colspan="6">No data for ${selectedDate}</td></tr>`;
-    return;
+  if(!currentDate){
+    if(!dateInput.value){
+      alert("Select date");
+      return;
+    }
+    currentDate = new Date(dateInput.value);
+  }else{
+    currentDate.setDate(currentDate.getDate() + offset);
+    dateInput.valueAsDate = currentDate;
   }
 
-  // show Day + Ayanamsam once
-  info.innerText =
-    `📅 ${rows[0].Day} | 🕉️ Ayanamsam: ${rows[0].Ayanamsam}`;
+  btn.classList.add("loading");
+  btn.innerHTML = `<span class="loader"></span>`;
 
-  rows.forEach(r=>{
-    tbody.innerHTML += `
-      <tr>
-        <td>${r.Planet}</td>
-        <td>${r["D.M.S"]}</td>
-        <td>${r.Sign}</td>
-        <td>${r.Star}</td>
-        <td>${r.Sub}</td>
-        <td>${r["S.Time"] || ""}</td>
-      </tr>`;
-  });
+  tbody.innerHTML =
+    `<tr><td colspan="6" class="loading-row">Loading…</td></tr>`;
+  info.innerHTML = "";
+
+  try{
+    const d = currentDate;
+    const selectedDate =
+      `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+
+    const res = await fetch("panchangam_2026.json");
+    const data = await res.json();
+
+    const rows = data.filter(r => r.Date === selectedDate);
+
+    if(rows.length === 0){
+      tbody.innerHTML =
+        `<tr><td colspan="6">No data for ${selectedDate}</td></tr>`;
+      return;
+    }
+
+    info.innerText =
+      `📅 ${rows[0].Day} | 🕉️ Ayanamsam: ${rows[0].Ayanamsam}`;
+
+    tbody.innerHTML = "";
+    rows.forEach(r=>{
+      tbody.innerHTML += `
+        <tr>
+          <td>🪐 ${r.Planet}</td>
+          <td>${r["D.M.S"]}</td>
+          <td>${r.Sign}</td>
+          <td>${r.Star}</td>
+          <td>${r.Sub}</td>
+          <td>${r["S.Time"] || ""}</td>
+        </tr>`;
+    });
+
+  }catch{
+    tbody.innerHTML =
+      `<tr><td colspan="6">Error loading data</td></tr>`;
+  }finally{
+    btn.classList.remove("loading");
+    btn.innerHTML = "Show";
+  }
 }
+
+/* ===== SWIPE SUPPORT ===== */
+let startX = 0;
+
+document.addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e=>{
+  const endX = e.changedTouches[0].clientX;
+  const diff = endX - startX;
+
+  if(Math.abs(diff) > 50){
+    if(diff < 0){
+      loadData(1);   // next day
+    }else{
+      loadData(-1);  // previous day
+    }
+  }
+});
 </script>
 
 </body>
