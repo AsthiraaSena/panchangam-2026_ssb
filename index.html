@@ -178,7 +178,11 @@ async function loadData(offset = 0){
       alert("Select date");
       return;
     }
-    currentDate = new Date(dateInput.value);
+
+    // ✅ FIX: avoid UTC bug
+    const [y, m, d] = dateInput.value.split("-").map(Number);
+    currentDate = new Date(y, m - 1, d);
+
   }else{
     currentDate.setDate(currentDate.getDate() + offset);
     dateInput.valueAsDate = currentDate;
@@ -193,6 +197,7 @@ async function loadData(offset = 0){
 
   try{
     const d = currentDate;
+
     const selectedDate =
       `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
 
