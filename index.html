@@ -138,26 +138,20 @@ const btn = document.getElementById("showBtn");
 const tbody = document.getElementById("tbody");
 const info = document.getElementById("info");
 
-/* ========= SAFE DATE BUILDER ========= */
-function buildDateFromInput(){
+/* ===== SAFE DATE PARSER (NO UTC ISSUE) ===== */
+function getSelectedDate(){
   const [y,m,d] = dateInput.value.split("-").map(Number);
-  return new Date(y, m-1, d); // local date ONLY
+  return new Date(y, m-1, d); // local date
 }
 
-async function loadData(dayOffset = 0){
+async function loadData(){
 
   if(!dateInput.value){
     alert("Select date");
     return;
   }
 
-  // 🔒 ALWAYS rebuild date fresh
-  let dateObj = buildDateFromInput();
-  dateObj.setDate(dateObj.getDate() + dayOffset);
-
-  // sync back to input
-  dateInput.value =
-    dateObj.toISOString().slice(0,10);
+  const dateObj = getSelectedDate();
 
   btn.classList.add("loading");
   btn.innerHTML = `<span class="loader"></span>`;
@@ -206,22 +200,8 @@ async function loadData(dayOffset = 0){
   }
 }
 
-/* ========= EVENTS ========= */
-btn.onclick = () => loadData(0);
-
-/* ========= SWIPE ========= */
-let startX = 0;
-
-document.addEventListener("touchstart",e=>{
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener("touchend",e=>{
-  const diff = e.changedTouches[0].clientX - startX;
-  if(Math.abs(diff) > 60){
-    loadData(diff < 0 ? 1 : -1);
-  }
-});
+/* ===== EVENTS ===== */
+btn.onclick = loadData;
 </script>
 
 </body>
