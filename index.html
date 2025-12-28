@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panchangam CSV Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>🪐 Panchangam – CSV Test</h2>
+
+<input type="date" id="dateInput">
+<button onclick="loadData()">Show</button>
+
+<table>
+<thead>
+<tr>
+<th>Planet</th>
+<th>D.M.S</th>
+<th>Sign</th>
+<th>Star</th>
+<th>Sub</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody id="tbody">
+<tr><td colspan="6">Select a date</td></tr>
+</tbody>
+</table>
+
+<script>
+async function loadData(){
+
+  const input = document.getElementById("dateInput").value;
+  if(!input){
+    alert("Select date");
+    return;
+  }
+
+  // YYYY-MM-DD → DD-MM-YYYY
+  const [y,m,d] = input.split("-");
+  const selectedDate = `${d}-${m}-${y}`;
+
+  const res = await fetch("panchangam_2026.csv");
+  const text = (await res.text())
+    .replace(/\uFEFF/g,"")
+    .replace(/\r/g,"");
+
+  const lines = text.split("\n");
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  let found = false;
+
+  for(let i=1;i<lines.length;i++){
+    const line = lines[i].trim();
+    if(!line || line.replace(/,/g,"")==="") continue;
+
+    const c = line.split(",");
+
+    if(c[0] === selectedDate){
+      found = true;
+      tbody.innerHTML += `
+        <tr>
+          <td>${c[2]}</td>
+          <td>${c[3]}</td>
+          <td>${c[4]}</td>
+          <td>${c[5]}</td>
+          <td>${c[6]}</td>
+          <td>${c[7]}</td>
+        </tr>`;
+    }
+  }
+
+  if(!found){
+    tbody.innerHTML =
+      `<tr><td colspan="6">No data for ${selectedDate}</td></tr>`;
+  }
+}
+</script>
+
+</body>
+</html>
