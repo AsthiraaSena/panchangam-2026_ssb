@@ -6,6 +6,7 @@
 <title>Daily Planet Transit</title>
 
 <style>
+/* ================= BASE ================= */
 body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
   margin:0;
@@ -21,6 +22,7 @@ h2{
   font-weight:600;
 }
 
+/* ================= CONTROLS ================= */
 .controls{
   display:flex;
   gap:8px;
@@ -55,6 +57,7 @@ h2{
   margin:6px 0;
 }
 
+/* ================= TABLE ================= */
 table{
   width:100%;
   border-collapse:collapse;
@@ -74,6 +77,13 @@ th{
   color:#fff;
 }
 
+/* Highlight SSB column */
+td:nth-child(6){
+  font-weight:600;
+  color:#8b0000;
+}
+
+/* ================= LOADER ================= */
 .loader{
   width:16px;
   height:16px;
@@ -98,6 +108,7 @@ button.loading{
   color:#555;
 }
 
+/* ================= MOBILE ================= */
 @media(max-width:480px){
   table{ font-size:13px; }
   th,td{ padding:6px; }
@@ -124,11 +135,12 @@ button.loading{
   <th>Sign</th>
   <th>Star</th>
   <th>Sub</th>
+  <th>SSB</th>
   <th>S.Time</th>
 </tr>
 </thead>
 <tbody id="tbody">
-<tr><td colspan="6">Select a date</td></tr>
+<tr><td colspan="7">Select a date</td></tr>
 </tbody>
 </table>
 
@@ -157,7 +169,7 @@ async function loadData(){
   btn.innerHTML = `<span class="loader"></span>`;
 
   tbody.innerHTML =
-    `<tr><td colspan="6" class="loading-row">Loading…</td></tr>`;
+    `<tr><td colspan="7" class="loading-row">Loading…</td></tr>`;
   info.innerHTML = "";
 
   try{
@@ -171,7 +183,7 @@ async function loadData(){
 
     if(rows.length === 0){
       tbody.innerHTML =
-        `<tr><td colspan="6">No data for ${selDate}</td></tr>`;
+        `<tr><td colspan="7">No data for ${selDate}</td></tr>`;
       return;
     }
 
@@ -182,18 +194,19 @@ async function loadData(){
     rows.forEach(r=>{
       tbody.innerHTML += `
       <tr>
-        <td>${r.Planet}</td>
+        <td>${r.Planet || ""}</td>
         <td>${r["D.M.S"]}</td>
         <td>${r.Sign}</td>
         <td>${r.Star}</td>
         <td>${r.Sub}</td>
+        <td>${r.SSB}</td>
         <td>${r["S.Time"] || ""}</td>
       </tr>`;
     });
 
-  }catch{
+  }catch(e){
     tbody.innerHTML =
-      `<tr><td colspan="6">Error loading data</td></tr>`;
+      `<tr><td colspan="7">Error loading data</td></tr>`;
   }finally{
     btn.classList.remove("loading");
     btn.innerHTML = "Show";
