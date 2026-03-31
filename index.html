@@ -1,221 +1,329 @@
 <!DOCTYPE html>
 <html lang="ta">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Planet Transit</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Planet Transit</title>
 
-<style>
-/* ================= BASE ================= */
-body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  margin:0;
-  padding:8px;
-  background:#f4f6fb;
-  color:#222;
-}
+  <style>
+    /* ================= BASE ================= */
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+      margin: 0;
+      padding: 8px;
+      background: #f4f6fb;
+      color: #222;
+    }
 
-h2{
-  text-align:center;
-  margin:6px 0 10px;
-  font-size:18px;
-  font-weight:600;
-}
+    h2 {
+      text-align: center;
+      margin: 6px 0 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
 
-/* ================= CONTROLS ================= */
-.controls{
-  display:flex;
-  gap:8px;
-  max-width:420px;
-  margin:0 auto 8px;
-}
+    /* ================= CONTROLS ================= */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 420px;
+      margin: 0 auto 8px;
+    }
 
-.controls input{
-  flex:1;
-  height:36px;
-  padding:6px 8px;
-  font-size:14px;
-  border:1px solid #ccc;
-  border-radius:4px;
-}
+    .controls input {
+      flex: 2;
+      height: 36px;
+      padding: 6px 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
 
-.controls button{
-  width:90px;
-  height:36px;
-  font-size:14px;
-  background:#243c8f;
-  color:#fff;
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
-}
+    .controls button {
+      flex: 1;
+      height: 36px;
+      font-size: 14px;
+      background: #243c8f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-#info{
-  text-align:center;
-  font-size:13px;
-  font-weight:600;
-  margin:6px 0;
-}
+    .controls button:hover {
+      background: #1a2d6e;
+    }
 
-/* ================= TABLE ================= */
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
-  font-size:12px;
-}
+    #langBtn {
+      background: #fff;
+      color: #243c8f;
+      border: 1px solid #243c8f;
+    }
 
-th,td{
-  border:1px solid #ccc;
-  padding:5px 6px;
-  text-align:center;
-  white-space:nowrap;
-}
+    #langBtn:hover {
+      background: #f0f4ff;
+    }
 
-th{
-  background:#243c8f;
-  color:#fff;
-}
+    #info {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 6px 0;
+    }
 
-/* Highlight SSB column */
-td:nth-child(6){
-  font-weight:500;
-  color:#8b0000;
-}
+    /* ================= TABLE ================= */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 12px;
+    }
 
-/* ================= LOADER ================= */
-.loader{
-  width:16px;
-  height:16px;
-  border:3px solid #fff;
-  border-top:3px solid transparent;
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
-  display:inline-block;
-}
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 5px 6px;
+      text-align: center;
+      white-space: nowrap;
+    }
 
-@keyframes spin{
-  to{ transform:rotate(360deg); }
-}
+    th {
+      background: #243c8f;
+      color: #fff;
+    }
 
-button.loading{
-  pointer-events:none;
-  opacity:0.8;
-}
+    /* Highlight SSB column */
+    td:nth-child(6) {
+      font-weight: 500;
+      color: #8b0000;
+    }
 
-.loading-row{
-  font-weight:600;
-  color:#555;
-}
+    /* ================= LOADER ================= */
+    .loader {
+      width: 16px;
+      height: 16px;
+      border: 3px solid #fff;
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
 
-/* ================= MOBILE ================= */
-@media(max-width:480px){
-  table{ font-size:13px; }
-  th,td{ padding:6px; }
-}
-</style>
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    button.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .loading-row {
+      font-weight: 600;
+      color: #555;
+    }
+
+    /* ================= MOBILE ================= */
+    @media(max-width:480px) {
+      table {
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 6px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>🪐 Planet Transit</h2>
+  <h2 id="pageTitle">🪐 Planet Transit</h2>
 
-<div class="controls">
-  <input type="date" id="dateInput">
-  <button id="showBtn">Show</button>
-</div>
+  <div class="controls">
+    <input type="date" id="dateInput">
+    <button id="showBtn">Show</button>
+    <button id="langBtn">தமிழ் / Eng</button>
+  </div>
 
-<div id="info"></div>
+  <div id="info"></div>
 
-<table>
-<thead>
-<tr>
-  <th>Planet</th>
-  <th>D.M.S</th>
-  <th>Sign</th>
-  <th>Star</th>
-  <th>Sub</th>
-  <th>SSB</th>
-  <th>S.Time</th>
-</tr>
-</thead>
-<tbody id="tbody">
-<tr><td colspan="7">Select a date</td></tr>
-</tbody>
-</table>
+  <table>
+    <thead>
+      <tr id="theadRow">
+        <th>Planet</th>
+        <th>D.M.S</th>
+        <th>Sign</th>
+        <th>Star</th>
+        <th>Sub</th>
+        <th>SSB</th>
+        <th>S.Time</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr>
+        <td colspan="7">Select a date</td>
+      </tr>
+    </tbody>
+  </table>
 
-<script>
-const dateInput = document.getElementById("dateInput");
-const btn = document.getElementById("showBtn");
-const tbody = document.getElementById("tbody");
-const info = document.getElementById("info");
+  <script>
+    const dateInput = document.getElementById("dateInput");
+    const btn = document.getElementById("showBtn");
+    const langBtn = document.getElementById("langBtn");
+    const tbody = document.getElementById("tbody");
+    const info = document.getElementById("info");
+    const pageTitle = document.getElementById("pageTitle");
+    const theadRow = document.getElementById("theadRow");
 
-/* ===== SAFE DATE PARSER (NO UTC ISSUE) ===== */
-function getSelectedDate(){
-  const [y,m,d] = dateInput.value.split("-").map(Number);
-  return new Date(y, m-1, d); // local date
-}
+    let currentLang = "ta"; // Default to Tamil as per existing data
 
-async function loadData(){
+    const translations = {
+      ta: {
+        title: "🪐 கிரகப் பெயர்ச்சி (Planet Transit)",
+        show: "காண்பி",
+        lang: "English",
+        loading: "பதிவேற்றப்படுகிறது...",
+        selectDate: "தேதியைத் தேர்ந்தெடுக்கவும்",
+        noData: "தரவு இல்லை",
+        error: "பிழை ஏற்பட்டது",
+        ayanamsam: "அயனாம்சம்",
+        headers: ["கிரகம்", "D.M.S", "ராசி", "நட்", "உப", "சுப்", "நேரம்"]
+      },
+      en: {
+        title: "🪐 Planet Transit",
+        show: "Show",
+        lang: "தமிழ்",
+        loading: "Loading...",
+        selectDate: "Select a date",
+        noData: "No data for",
+        error: "Error loading data",
+        ayanamsam: "Ayanamsam",
+        headers: ["Planet", "D.M.S", "Sign", "Star", "Sub", "SSB", "S.Time"]
+      }
+    };
 
-  if(!dateInput.value){
-    alert("Select date");
-    return;
-  }
+    const planetMap = {
+      "சூரி": "Sun", "சந்": "Mo", "செவ்": "Mar", "புத": "Mer",
+      "குரு": "Jup", "சுக்": "Ven", "சனி": "Sat", "ராகு": "Ra", "கேது": "Ke"
+    };
 
-  const dateObj = getSelectedDate();
+    const signMap = {
+      "மேஷ": "Ari", "ரிஷ": "Tau", "மிது": "Gem", "கட": "Can",
+      "சிம்": "Leo", "கன்": "Vir", "துலா": "Lib", "விரு": "Sco",
+      "தனு": "Sag", "மக": "Cap", "கும்": "Aqu", "மீனம்": "Pis"
+    };
 
-  btn.classList.add("loading");
-  btn.innerHTML = `<span class="loader"></span>`;
+    const dayMap = {
+      "ஞாயிறு": "Sunday", "திங்கள்": "Monday", "செவ்வாய்": "Tuesday",
+      "புதன்": "Wednesday", "வியாழன்": "Thursday", "வெள்ளி": "Friday", "சனி": "Saturday"
+    };
 
-  tbody.innerHTML =
-    `<tr><td colspan="7" class="loading-row">Loading…</td></tr>`;
-  info.innerHTML = "";
-
-  try{
-    const selDate =
-      `${String(dateObj.getDate()).padStart(2,'0')}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${dateObj.getFullYear()}`;
-
-    const res = await fetch("panchangam_2026.json");
-    const data = await res.json();
-
-    const rows = data.filter(r => r.Date === selDate);
-
-    if(rows.length === 0){
-      tbody.innerHTML =
-        `<tr><td colspan="7">No data for ${selDate}</td></tr>`;
-      return;
+    function t(key) {
+      return translations[currentLang][key] || key;
     }
 
-    info.innerText =
-      `📅 ${rows[0].Day} | 🕉️ Ayanamsam: ${rows[0].Ayanamsam}`;
+    function translateValue(val, map) {
+      if (currentLang === 'ta') return val;
+      return map[val] || val;
+    }
 
-    tbody.innerHTML = "";
-    rows.forEach(r=>{
-      tbody.innerHTML += `
+    function updateUIStrings() {
+      pageTitle.innerText = t('title');
+      btn.innerText = t('show');
+      langBtn.innerText = t('lang');
+
+      // Update Headers
+      const headers = t('headers');
+      theadRow.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+
+      // If table is empty or has placeholder, update it
+      if (tbody.rows.length === 1 && tbody.rows[0].cells.length === 1) {
+        tbody.innerHTML = `<tr><td colspan="7">${t('selectDate')}</td></tr>`;
+      }
+    }
+
+    langBtn.onclick = () => {
+      currentLang = currentLang === "ta" ? "en" : "ta";
+      updateUIStrings();
+      if (dateInput.value) loadData();
+    };
+
+    /* ===== SAFE DATE PARSER (NO UTC ISSUE) ===== */
+    function getSelectedDate() {
+      const [y, m, d] = dateInput.value.split("-").map(Number);
+      return new Date(y, m - 1, d); // local date
+    }
+
+    async function loadData() {
+
+      if (!dateInput.value) {
+        alert(t('selectDate'));
+        return;
+      }
+
+      const dateObj = getSelectedDate();
+
+      btn.classList.add("loading");
+      btn.innerHTML = `<span class="loader"></span>`;
+
+      tbody.innerHTML =
+        `<tr><td colspan="7" class="loading-row">${t('loading')}</td></tr>`;
+      info.innerHTML = "";
+
+      try {
+        const selDate =
+          `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
+
+        const res = await fetch("panchangam_2026.json");
+        const data = await res.json();
+
+        const rows = data.filter(r => r.Date === selDate);
+
+        if (rows.length === 0) {
+          tbody.innerHTML =
+            `<tr><td colspan="7">${t('noData')} ${selDate}</td></tr>`;
+          return;
+        }
+
+        const dayTranslated = translateValue(rows[0].Day, dayMap);
+        info.innerText =
+          `📅 ${dayTranslated} | 🕉️ ${t('ayanamsam')}: ${rows[0].Ayanamsam}`;
+
+        tbody.innerHTML = "";
+        rows.forEach(r => {
+          tbody.innerHTML += `
       <tr>
-        <td>${r.Planet || ""}</td>
+        <td>${translateValue(r.Planet, planetMap) || ""}</td>
         <td>${r["D.M.S"]}</td>
-        <td>${r.Sign}</td>
-        <td>${r.Star}</td>
-        <td>${r.Sub}</td>
-        <td>${r.SSB}</td>
+        <td>${translateValue(r.Sign, signMap)}</td>
+        <td>${translateValue(r.Star, planetMap)}</td>
+        <td>${translateValue(r.Sub, planetMap)}</td>
+        <td>${translateValue(r.SSB, planetMap)}</td>
         <td>${r["S.Time"] || ""}</td>
       </tr>`;
-    });
+        });
 
-  }catch(e){
-    tbody.innerHTML =
-      `<tr><td colspan="7">Error loading data</td></tr>`;
-  }finally{
-    btn.classList.remove("loading");
-    btn.innerHTML = "Show";
-  }
-}
+      } catch (e) {
+        tbody.innerHTML =
+          `<tr><td colspan="7">${t('error')}</td></tr>`;
+      } finally {
+        btn.classList.remove("loading");
+        btn.innerHTML = t('show');
+      }
+    }
 
-/* ===== EVENTS ===== */
-btn.onclick = loadData;
-</script>
+    /* ===== INITIALIZE ===== */
+    updateUIStrings();
+    btn.onclick = loadData;
+  </script>
 
 </body>
+
 </html>
