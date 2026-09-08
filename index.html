@@ -1,223 +1,394 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="ta" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daily Planet Transit</title>
+  <title>Daily Planet Transit Panchangam 2026</title>
 
-  <style>
-    /* ================= BASE ================= */
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto;
-      margin: 0;
-      padding: 8px;
-      background: #f4f6fb;
-      color: #222;
-    }
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
 
-    h2 {
-      text-align: center;
-      margin: 6px 0 10px;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    /* ================= CONTROLS ================= */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      max-width: 420px;
-      margin: 0 auto 8px;
-    }
-
-    .controls input {
-      flex: 2;
-      height: 36px;
-      padding: 6px 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .controls button {
-      flex: 1;
-      height: 36px;
-      font-size: 14px;
-      background: #243c8f;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .controls button:hover {
-      background: #1a2d6e;
-    }
-
-    #langBtn {
-      background: #fff;
-      color: #243c8f;
-      border: 1px solid #243c8f;
-    }
-
-    #langBtn:hover {
-      background: #f0f4ff;
-    }
-
-    #info {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      margin: 6px 0;
-    }
-
-    /* ================= TABLE ================= */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      font-size: 12px;
-    }
-
-    th,
-    td {
-      border: 1px solid #ccc;
-      padding: 5px 6px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    th {
-      background: #243c8f;
-      color: #fff;
-    }
-
-    /* Highlight SSB column */
-    td:nth-child(6) {
-      font-weight: 500;
-      color: #8b0000;
-    }
-
-    /* ================= LOADER ================= */
-    .loader {
-      width: 16px;
-      height: 16px;
-      border: 3px solid #fff;
-      border-top: 3px solid transparent;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      display: inline-block;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    button.loading {
-      pointer-events: none;
-      opacity: 0.8;
-    }
-
-    .loading-row {
-      font-weight: 600;
-      color: #555;
-    }
-
-    /* ================= MOBILE ================= */
-    @media(max-width:480px) {
-      table {
-        font-size: 13px;
-      }
-
-      th,
-      td {
-        padding: 6px;
-      }
-    }
-  </style>
+  <!-- Link to External Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <div class="stars-overlay"></div>
 
-  <h2 id="pageTitle">🪐 Planet Transit</h2>
+  <div class="app-container">
+    <!-- Top Utility Bar: Live World Clock & Theme Switcher -->
+    <header class="header-top-bar">
+      <div class="live-clock" id="liveClockDisplay">
+        <span class="live-clock-dot"></span>
+        <span id="liveClockText">--:--:-- --</span>
+      </div>
+      <div class="top-bar-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </header>
 
-  <div class="controls">
-    <input type="date" id="dateInput">
-    <button id="showBtn">Show</button>
-    <button id="langBtn">தமிழ் / Eng</button>
+    <!-- Main Branding Header -->
+    <div class="app-header">
+      <div class="brand-wrapper">
+        <span class="planet-orb">🪐</span>
+        <h1 class="app-title" id="pageTitle">கிரக நகர்வு பஞ்சாங்கம் 2026</h1>
+      </div>
+      <p class="app-subtitle" id="pageSubtitle">KB & SSB Daily Planetary Transit & Sub-Sub Lord Ephemeris</p>
+    </div>
+
+    <!-- Main Interactive Control Center -->
+    <section class="control-panel">
+      <div class="controls-grid">
+        <!-- Date Selector with Steppers -->
+        <div class="form-group">
+          <label class="form-label" for="dateInput">
+            <span class="label-icon">📅</span>
+            <span id="lblDate">தேதி / Date</span>
+          </label>
+          <div class="date-input-group">
+            <button class="date-stepper-btn" id="prevDayBtn" title="Previous Day">‹</button>
+            <input type="date" id="dateInput" class="date-input-field">
+            <button class="date-stepper-btn" id="nextDayBtn" title="Next Day">›</button>
+          </div>
+        </div>
+
+        <!-- World Timezone Combobox -->
+        <div class="form-group">
+          <label class="form-label" for="timezoneSelect">
+            <span class="label-icon">🌍</span>
+            <span id="lblTimezone">நேர மண்டலம் / Timezone</span>
+          </label>
+          <div class="timezone-select-wrapper">
+            <select id="timezoneSelect" class="timezone-select">
+              <optgroup label="🇮🇳 India & South Asia">
+                <option value="Asia/Kolkata" selected>🇮🇳 IST (India) • UTC+05:30 [Default]</option>
+                <option value="Asia/Colombo">🇱🇰 SLST (Sri Lanka) • UTC+05:30</option>
+                <option value="Asia/Karachi">🇵🇰 PKT (Pakistan) • UTC+05:00</option>
+                <option value="Asia/Kathmandu">🇳🇵 NPT (Nepal) • UTC+05:45</option>
+                <option value="Asia/Dhaka">🇧🇩 BST (Bangladesh) • UTC+06:00</option>
+              </optgroup>
+              <optgroup label="🇦🇪 Middle East & Gulf">
+                <option value="Asia/Dubai">🇦🇪 GST (Dubai, UAE, Oman) • UTC+04:00</option>
+                <option value="Asia/Riyadh">🇸🇦 AST (Saudi, Qatar, Bahrain, Kuwait) • UTC+03:00</option>
+                <option value="Asia/Tehran">🇮🇷 IRST (Iran) • UTC+03:30</option>
+              </optgroup>
+              <optgroup label="🇸🇬 Southeast & East Asia">
+                <option value="Asia/Singapore">🇸🇬 SGT (Singapore, Malaysia) • UTC+08:00</option>
+                <option value="Asia/Bangkok">🇹🇭 ICT (Bangkok, Vietnam, Jakarta) • UTC+07:00</option>
+                <option value="Asia/Hong_Kong">🇭🇰 HKT (Hong Kong, Taiwan, China) • UTC+08:00</option>
+                <option value="Asia/Tokyo">🇯🇵 JST (Tokyo, Japan, Seoul) • UTC+09:00</option>
+              </optgroup>
+              <optgroup label="🇦🇺 Australasia & Pacific">
+                <option value="Australia/Perth">🇦🇺 AWST (Perth) • UTC+08:00</option>
+                <option value="Australia/Adelaide">🇦🇺 ACST (Adelaide, Darwin) • UTC+09:30</option>
+                <option value="Australia/Sydney">🇦🇺 AEST / AEDT (Sydney, Melbourne) • UTC+10/+11</option>
+                <option value="Pacific/Auckland">🇳🇿 NZST / NZDT (Auckland, Fiji) • UTC+12/+13</option>
+                <option value="Pacific/Honolulu">🇺🇸 HST (Hawaii) • UTC-10:00</option>
+              </optgroup>
+              <optgroup label="🇬🇧 Europe & Africa">
+                <option value="UTC">🌐 UTC / GMT (Universal Standard) • UTC+00:00</option>
+                <option value="Europe/London">🇬🇧 GMT / BST (London, Dublin, Lisbon) • UTC+00/+01</option>
+                <option value="Europe/Paris">🇫🇷 CET / CEST (Paris, Berlin, Rome, Madrid) • UTC+01/+02</option>
+                <option value="Europe/Athens">🇬🇷 EET / EEST (Athens, Cairo, Bucharest) • UTC+02/+03</option>
+                <option value="Europe/Moscow">🇷🇺 MSK (Moscow, St. Petersburg) • UTC+03:00</option>
+                <option value="Africa/Johannesburg">🇿🇦 SAST (South Africa) • UTC+02:00</option>
+              </optgroup>
+              <optgroup label="🇺🇸 Americas">
+                <option value="America/New_York">🇺🇸 EDT / EST (New York, Toronto, Miami) • UTC-04/-05</option>
+                <option value="America/Chicago">🇺🇸 CDT / CST (Chicago, Dallas, Houston) • UTC-05/-06</option>
+                <option value="America/Denver">🇺🇸 MDT / MST (Denver, Phoenix, Calgary) • UTC-06/-07</option>
+                <option value="America/Los_Angeles">🇺🇸 PDT / PST (Los Angeles, SF, Seattle) • UTC-07/-08</option>
+                <option value="America/Sao_Paulo">🇧🇷 BRT (São Paulo, Rio) • UTC-03:00</option>
+              </optgroup>
+            </select>
+            <span class="select-arrow-icon">▼</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-group">
+          <label class="form-label" id="lblAction">&nbsp;</label>
+          <div class="controls-actions-row">
+            <button id="showBtn" class="btn btn-primary">
+              <span id="btnShowText">காண்பி / Show</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Language Pill Switch -->
+        <div class="form-group">
+          <label class="form-label" id="lblLang">மொழி / Lang</label>
+          <div class="pill-toggle-group">
+            <button type="button" class="pill-toggle-btn active" id="langBtnTa">தமிழ்</button>
+            <button type="button" class="pill-toggle-btn" id="langBtnEn">Eng</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Toolbar: Planet Quick Filter Chips, Search, & Time Format -->
+      <div class="secondary-bar">
+        <div class="planet-filter-scroll" id="planetChipsContainer">
+          <button class="chip-btn active" data-planet="ALL" id="chipAll">🌐 <span id="txtAllPlanets">அனைத்தும்
+              (All)</span></button>
+          <button class="chip-btn" data-planet="சூரி">☀️ <span class="chip-label" data-ta="சூரியன்"
+              data-en="Sun">சூரியன்</span></button>
+          <button class="chip-btn" data-planet="சந்">🌙 <span class="chip-label" data-ta="சந்திரன்"
+              data-en="Moon">சந்திரன்</span></button>
+          <button class="chip-btn" data-planet="செவ்">♂️ <span class="chip-label" data-ta="செவ்வாய்"
+              data-en="Mars">செவ்வாய்</span></button>
+          <button class="chip-btn" data-planet="புத">☿ <span class="chip-label" data-ta="புதன்"
+              data-en="Mercury">புதன்</span></button>
+          <button class="chip-btn" data-planet="குரு">♃ <span class="chip-label" data-ta="குரு"
+              data-en="Jupiter">குரு</span></button>
+          <button class="chip-btn" data-planet="சுக்">♀️ <span class="chip-label" data-ta="சுக்கிரன்"
+              data-en="Venus">சுக்கிரன்</span></button>
+          <button class="chip-btn" data-planet="சனி">♄ <span class="chip-label" data-ta="சனி"
+              data-en="Saturn">சனி</span></button>
+          <button class="chip-btn" data-planet="ராகு">☊ <span class="chip-label" data-ta="ராகு"
+              data-en="Rahu">ராகு</span></button>
+          <button class="chip-btn" data-planet="கேது">☋ <span class="chip-label" data-ta="கேது"
+              data-en="Ketu">கேது</span></button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <!-- 12h / 24h Toggle -->
+          <div class="pill-toggle-group" style="height:34px;">
+            <button type="button" class="pill-toggle-btn active" id="timeFormat24">24H</button>
+            <button type="button" class="pill-toggle-btn" id="timeFormat12">12H</button>
+          </div>
+
+          <!-- Quick Search Box -->
+          <div class="search-box-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search SSB, Sign, Lord...">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info & Metrics Banner -->
+    <section class="info-banner" id="infoBanner">
+      <div class="info-card">
+        <div class="info-card-icon icon-day">📅</div>
+        <div class="info-card-content">
+          <span class="info-card-label" id="lblInfoDay">நாள் / Day</span>
+          <span class="info-card-value" id="valInfoDay">—</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icon icon-ayanamsam">🕉️</div>
+        <div class="info-card-content">
+          <span class="info-card-label" id="lblInfoAyanamsam">அயனாம்சம் / Ayanamsam</span>
+          <span class="info-card-value dms-text" id="valInfoAyanamsam">—</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icon icon-timezone">🕒</div>
+        <div class="info-card-content">
+          <span class="info-card-label" id="lblInfoTz">தேர்ந்தெடுக்கப்பட்ட நேரம் / Time</span>
+          <span class="info-card-value" id="valInfoTz">Asia/Kolkata (IST)</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-icon icon-count">⚡</div>
+        <div class="info-card-content">
+          <span class="info-card-label" id="lblInfoTransits">மொத்த நகர்வுகள் / Total Events</span>
+          <span class="info-card-value" id="valInfoTransits">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- View Switcher & Title -->
+    <div class="view-header">
+      <div class="view-heading">
+        <span id="txtTransitTitle">கிரக நகர்வு விவரங்கள்</span>
+        <span id="activeFilterBadge" style="display:none;" class="chip-btn active"></span>
+      </div>
+      <div class="view-actions">
+        <div class="view-toggle-pills">
+          <button type="button" class="view-toggle-btn active" id="btnTableView" title="Table View">📊 <span
+              id="txtTableView">அட்டவணை</span></button>
+          <button type="button" class="view-toggle-btn" id="btnCardView" title="Mobile Card View">📱 <span
+              id="txtCardView">கார்டுகள்</span></button>
+        </div>
+        <button class="chip-btn" id="copyDataBtn" title="Copy to clipboard">📋 <span id="txtCopy">நகலெடு</span></button>
+      </div>
+    </div>
+
+    <!-- Main Table View -->
+    <div class="table-card" id="tableViewContainer">
+      <div class="table-responsive">
+        <table class="transit-table">
+          <thead>
+            <tr id="theadRow">
+              <th id="thPlanet">கிரகம் (Planet)</th>
+              <th id="thDMS">பா.க.வி (D.M.S)</th>
+              <th id="thSign">ராசி (Sign)</th>
+              <th id="thStar">நட்சத்திரம் (Star)</th>
+              <th id="thSub">உப (Sub)</th>
+              <th id="thSSB" style="color:var(--ssb-badge-text);">உஉப (SSB) ★</th>
+              <th id="thSTime">ஆரம்ப நேரம் (S.Time)</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td colspan="7" class="state-message-row">
+                <span class="empty-state-icon">🔮</span>
+                <span id="txtInitialPrompt">தேதியைத் தேர்ந்தெடுத்து 'காண்பி' பொத்தானை அழுத்தவும் அல்லது தேதியை
+                  மாற்றவும்</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile Card / Feed View -->
+    <div class="cards-view-grid" id="cardsViewContainer" style="display: none;">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>🪐 <strong>Daily Planet Transit Panchangam</strong> • KB & SSB Astrology System</div>
+      <div class="footer-links">
+        <button class="footer-btn" id="btnScrollTop">⬆ <span id="txtBackToTop">மேலே செல்ல</span></button>
+        <span>•</span>
+        <span id="txtMonthAdaptNote">தானியங்கி மாதத் தரவு ஒத்திசைவு (Auto Month Sync)</span>
+      </div>
+    </footer>
   </div>
 
-  <div id="info"></div>
-
-  <table>
-    <thead>
-      <tr id="theadRow">
-        <th>Planet</th>
-        <th>D.M.S</th>
-        <th>Sign</th>
-        <th>Star</th>
-        <th>Sub</th>
-        <th>SSB</th>
-        <th>S.Time</th>
-      </tr>
-    </thead>
-    <tbody id="tbody">
-      <tr>
-        <td colspan="7">Select a date</td>
-      </tr>
-    </tbody>
-  </table>
-
+  <!-- Application Logic -->
   <script>
-    const dateInput = document.getElementById("dateInput");
-    const btn = document.getElementById("showBtn");
-    const langBtn = document.getElementById("langBtn");
-    const tbody = document.getElementById("tbody");
-    const info = document.getElementById("info");
-    const pageTitle = document.getElementById("pageTitle");
-    const theadRow = document.getElementById("theadRow");
+    /* ==========================================================================
+       APP STATE & CONSTANTS
+       ========================================================================== */
+    let cachedData = null;
+    let dataByDate = new Map();
+    let availableDatesList = []; // Chronological list of DD-MM-YYYY
+    let currentLang = "ta";
+    let selectedPlanetFilter = "ALL";
+    let selectedTimezone = localStorage.getItem("panchangam_tz") || "Asia/Kolkata";
+    let use12HourFormat = localStorage.getItem("panchangam_12h") === "true";
+    let currentViewMode = "table"; // 'table' or 'cards'
+    let currentRows = [];
+    let currentDayData = null;
 
-    let currentLang = "ta"; // Default to Tamil as per existing data
-
+    /* ================= TRANSLATIONS & MAPPINGS ================= */
     const translations = {
       ta: {
-        title: "🪐 கிரக நகர்வு ",
-        show: "காண்பி",
-        lang: "English",
-        loading: "பதிவேற்றப்படுகிறது...",
+        pageTitle: "கிரக நகர்வு பஞ்சாங்கம் 2026",
+        pageSubtitle: "KB & SSB தினசரி கிரக நகர்வு மற்றும் உப-உப அதிபதி அட்டவணை",
+        lblDate: "தேதி",
+        lblTimezone: "நேர மண்டலம்",
+        btnShow: "காண்பி",
+        lblLang: "மொழி",
+        lblInfoDay: "கிழமை",
+        lblInfoAyanamsam: "அயனாம்சம்",
+        lblInfoTz: "தேர்ந்தெடுக்கப்பட்ட நேரம்",
+        lblInfoTransits: "மொத்த நகர்வுகள்",
+        transitTitle: "கிரக நகர்வு விவரங்கள்",
+        txtTableView: "அட்டவணை",
+        txtCardView: "கார்டுகள்",
+        txtCopy: "நகலெடு",
+        txtBackToTop: "மேலே செல்ல",
+        txtAllPlanets: "அனைத்தும்",
+        copiedToast: "நகலெடுக்கப்பட்டது!",
+        loading: "தரவு ஏற்றப்படுகிறது...",
         selectDate: "தேதியைத் தேர்ந்தெடுக்கவும்",
-        noData: "தரவு இல்லை",
-        error: "பிழை ஏற்பட்டது",
-        ayanamsam: "அயனாம்சம்",
-        headers: ["கிரகம்", "பா.க.வி ", "ராசி", "நட்", "உப", "உஉப", "ஆ.நேரம்"]
+        noData: "தேர்ந்தெடுக்கப்பட்ட தேதிக்கு தரவு கிடைக்கவில்லை:",
+        availableRange: "கிடைக்கும் தேதிகள்:",
+        error: "தரவு ஏற்றுவதில் பிழை ஏற்பட்டது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+        startOfDay: "ஆரம்ப நிலை",
+        retrograde: "(வ)",
+        headers: ["கிரகம்", "பா.க.வி", "ராசி", "நட்சத்திரம்", "உப", "உஉப (SSB)", "ஆரம்ப நேரம்"],
+        dayShiftPlus: "+1 நாள்",
+        dayShiftMinus: "-1 நாள்"
       },
       en: {
-        title: "🪐 Planet Transit",
-        show: "Show",
-        lang: "தமிழ்",
-        loading: "Loading...",
-        selectDate: "Select a date",
-        noData: "No data for",
-        error: "Error loading data",
-        ayanamsam: "Ayanamsam",
-        headers: ["Planet", "D.M.S", "Sign", "Star", "Sub", "SSB", "S.Time"]
+        pageTitle: "Daily Planet Transit 2026",
+        pageSubtitle: "KB & SSB Daily Planetary Transit & Sub-Sub Lord Ephemeris",
+        lblDate: "Date",
+        lblTimezone: "World Timezone",
+        btnShow: "Show",
+        lblLang: "Language",
+        lblInfoDay: "Day of Week",
+        lblInfoAyanamsam: "KB Ayanamsam",
+        lblInfoTz: "Active Timezone",
+        lblInfoTransits: "Total Events",
+        transitTitle: "Planetary Transit Details",
+        txtTableView: "Table View",
+        txtCardView: "Cards View",
+        txtCopy: "Copy Data",
+        txtBackToTop: "Back to Top",
+        txtAllPlanets: "All Planets",
+        copiedToast: "Copied to Clipboard!",
+        loading: "Loading panchangam data...",
+        selectDate: "Select a Date",
+        noData: "No data available for date:",
+        availableRange: "Available dates:",
+        error: "Error loading panchangam data. Please try again.",
+        startOfDay: "Day Start Position",
+        retrograde: "(R)",
+        headers: ["Planet", "D.M.S", "Sign (Rasi)", "Star Lord", "Sub Lord", "SSB Lord", "Start Time"],
+        dayShiftPlus: "+1 day",
+        dayShiftMinus: "-1 day"
       }
     };
 
     const planetMap = {
-      "சூரி": "Sun", "சந்": "Mo", "செவ்": "Mar", "புத": "Mer",
-      "குரு": "Jup", "சுக்": "Ven", "சனி": "Sat", "ராகு": "Ra", "கேது": "Ke"
+      "சூரி": "Sun", "சந்": "Moon", "செவ்": "Mars", "புத": "Mercury",
+      "குரு": "Jupiter", "சுக்": "Venus", "சனி": "Saturn", "சனி-(வ)": "Saturn (R)",
+      "ராகு": "Rahu", "கேது": "Ketu",
+      "சூரியன்": "Sun", "சந்திரன்": "Moon", "செவ்வாய்": "Mars", "புதன்": "Mercury",
+      "சுக்கிரன்": "Venus"
     };
 
     const signMap = {
-      "மேஷ": "Ari", "ரிஷ": "Tau", "மிது": "Gem", "கட": "Can",
-      "சிம்": "Leo", "கன்": "Vir", "துலா": "Lib", "விரு": "Sco",
-      "தனு": "Sag", "மக": "Cap", "கும்": "Aqu", "மீனம்": "Pis"
+      "மேச": "Aries", "மேஷ": "Aries", "ரிச": "Taurus", "ரிஷ": "Taurus",
+      "மிது": "Gemini", "கட": "Cancer", "சிம்": "Leo", "கன்": "Virgo",
+      "துலா": "Libra", "விரு": "Scorpio", "தனு": "Sagittarius",
+      "மக": "Capricorn", "கும்": "Aquarius", "மீனம்": "Pisces", "மீன": "Pisces"
+    };
+
+    const signGlyphs = {
+      "மேச": "♈", "மேஷ": "♈", "ரிச": "♉", "ரிஷ": "♉",
+      "மிது": "♊", "கட": "♋", "சிம்": "♌", "கன்": "♍",
+      "துலா": "♎", "விரு": "♏", "தனு": "♐",
+      "மக": "♑", "கும்": "♒", "மீனம்": "♓", "மீன": "♓"
+    };
+
+    const planetIcons = {
+      "சூரி": "☀️", "சந்": "🌙", "செவ்": "♂️", "புத": "☿",
+      "குரு": "♃", "சுக்": "♀️", "சனி": "♄", "சனி-(வ)": "♄",
+      "ராகு": "☊", "கேது": "☋",
+      "Sun": "☀️", "Moon": "🌙", "Mars": "♂️", "Mercury": "☿",
+      "Jupiter": "♃", "Venus": "♀️", "Saturn": "♄", "Saturn (R)": "♄",
+      "Rahu": "☊", "Ketu": "☋"
+    };
+
+    const planetClasses = {
+      "சூரி": "planet-sun", "Sun": "planet-sun",
+      "சந்": "planet-moon", "Moon": "planet-moon",
+      "செவ்": "planet-mars", "Mars": "planet-mars",
+      "புத": "planet-mercury", "Mercury": "planet-mercury",
+      "குரு": "planet-jupiter", "Jupiter": "planet-jupiter",
+      "சுக்": "planet-venus", "Venus": "planet-venus",
+      "சனி": "planet-saturn", "Saturn": "planet-saturn",
+      "சனி-(வ)": "planet-saturn", "Saturn (R)": "planet-saturn",
+      "ராகு": "planet-rahu", "Rahu": "planet-rahu",
+      "கேது": "planet-ketu", "Ketu": "planet-ketu"
     };
 
     const dayMap = {
@@ -225,105 +396,684 @@
       "புதன்": "Wednesday", "வியாழன்": "Thursday", "வெள்ளி": "Friday", "சனி": "Saturday"
     };
 
+    /* ================= DOM ELEMENTS ================= */
+    const dateInput = document.getElementById("dateInput");
+    const timezoneSelect = document.getElementById("timezoneSelect");
+    const showBtn = document.getElementById("showBtn");
+    const btnShowText = document.getElementById("btnShowText");
+    const langBtnTa = document.getElementById("langBtnTa");
+    const langBtnEn = document.getElementById("langBtnEn");
+    const prevDayBtn = document.getElementById("prevDayBtn");
+    const nextDayBtn = document.getElementById("nextDayBtn");
+    const timeFormat24 = document.getElementById("timeFormat24");
+    const timeFormat12 = document.getElementById("timeFormat12");
+    const searchInput = document.getElementById("searchInput");
+    const tbody = document.getElementById("tbody");
+    const cardsViewContainer = document.getElementById("cardsViewContainer");
+    const tableViewContainer = document.getElementById("tableViewContainer");
+    const btnTableView = document.getElementById("btnTableView");
+    const btnCardView = document.getElementById("btnCardView");
+    const copyDataBtn = document.getElementById("copyDataBtn");
+    const liveClockText = document.getElementById("liveClockText");
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const themeIcon = document.getElementById("themeIcon");
+    const chipAll = document.getElementById("chipAll");
+    const planetChipsContainer = document.getElementById("planetChipsContainer");
+
+    // Metric Elements
+    const valInfoDay = document.getElementById("valInfoDay");
+    const valInfoAyanamsam = document.getElementById("valInfoAyanamsam");
+    const valInfoTz = document.getElementById("valInfoTz");
+    const valInfoTransits = document.getElementById("valInfoTransits");
+
+    /* ================= HELPER FUNCTIONS ================= */
     function t(key) {
       return translations[currentLang][key] || key;
     }
 
-    function translateValue(val, map) {
-      if (currentLang === 'ta') return val;
-      return map[val] || val;
+    function translatePlanet(val) {
+      if (!val) return "";
+      if (currentLang === "ta") return val;
+      return planetMap[val] || val;
     }
 
-    function updateUIStrings() {
-      pageTitle.innerText = t('title');
-      btn.innerText = t('show');
-      langBtn.innerText = t('lang');
+    function translateSign(val) {
+      if (!val) return "";
+      if (currentLang === "ta") return val;
+      return signMap[val] || val;
+    }
 
-      // Update Headers
-      const headers = t('headers');
-      theadRow.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+    function translateDay(val) {
+      if (!val) return "";
+      if (currentLang === "ta") return val;
+      return dayMap[val] || val;
+    }
 
-      // If table is empty or has placeholder, update it
-      if (tbody.rows.length === 1 && tbody.rows[0].cells.length === 1) {
-        tbody.innerHTML = `<tr><td colspan="7">${t('selectDate')}</td></tr>`;
+    /* ===== TIMEZONE CONVERSION ENGINE ===== */
+    /**
+     * Parses an Indian Standard Time (IST UTC+05:30) string with base date
+     * and converts it to a standard JavaScript Date (UTC instant).
+     * Handles astronomical transit times like 24:50:00 or 27:25:00.
+     */
+    function parseIstTimeToUtcDate(dateStr, timeStr) {
+      if (!timeStr || !timeStr.trim()) return null;
+      const [d, m, y] = dateStr.split('-').map(Number);
+      const parts = timeStr.trim().split(':').map(Number);
+      const hours = parts[0] || 0;
+      const mins = parts[1] || 0;
+      const secs = parts[2] || 0;
+
+      // Base midnight in UTC for the given date
+      const baseUtcMs = Date.UTC(y, m - 1, d, 0, 0, 0);
+      // IST is UTC + 5:30
+      const istOffsetMs = (5 * 60 + 30) * 60 * 1000;
+      const transitOffsetMs = (hours * 3600 + mins * 60 + secs) * 1000;
+
+      return new Date(baseUtcMs + transitOffsetMs - istOffsetMs);
+    }
+
+    /**
+     * Converts transit time into user-selected target timezone
+     * formatted as 12h or 24h, with day-shift indicators (+1d / -1d).
+     */
+    function formatTransitTimeInTimezone(dateStr, timeStr, targetTz, is12h) {
+      if (!timeStr || !timeStr.trim()) {
+        return {
+          formatted: currentLang === 'ta' ? 'ஆரம்ப நிலை' : 'Day Start',
+          isStart: true,
+          shiftBadge: ''
+        };
+      }
+
+      const utcDate = parseIstTimeToUtcDate(dateStr, timeStr);
+      if (!utcDate) {
+        return { formatted: timeStr, isStart: false, shiftBadge: '' };
+      }
+
+      try {
+        const formatter = new Intl.DateTimeFormat('en-GB', {
+          timeZone: targetTz,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: is12h
+        });
+
+        const parts = formatter.formatToParts(utcDate);
+        const p = {};
+        parts.forEach(pt => p[pt.type] = pt.value);
+
+        // Detect day shift compared to the base date
+        const targetDateStr = `${p.day}-${p.month}-${p.year}`;
+        let shiftBadge = '';
+        if (targetDateStr !== dateStr) {
+          const [bd, bm, by] = dateStr.split('-').map(Number);
+          const [td, tm, ty] = targetDateStr.split('-').map(Number);
+          const baseVal = by * 10000 + bm * 100 + bd;
+          const targetVal = ty * 10000 + tm * 100 + td;
+
+          if (targetVal > baseVal) {
+            shiftBadge = `<span class="day-shift-badge" title="${targetDateStr}">+1d</span>`;
+          } else if (targetVal < baseVal) {
+            shiftBadge = `<span class="day-shift-badge" title="${targetDateStr}">-1d</span>`;
+          }
+        }
+
+        let formatted = '';
+        if (is12h) {
+          const period = p.dayPeriod ? ` ${p.dayPeriod.toUpperCase()}` : '';
+          formatted = `${p.hour}:${p.minute}:${p.second}${period}`;
+        } else {
+          formatted = `${p.hour}:${p.minute}:${p.second}`;
+        }
+
+        return { formatted, isStart: false, shiftBadge, targetDateStr };
+      } catch (err) {
+        return { formatted: timeStr, isStart: false, shiftBadge: '' };
       }
     }
 
-    langBtn.onclick = () => {
-      currentLang = currentLang === "ta" ? "en" : "ta";
-      updateUIStrings();
-      if (dateInput.value) loadData();
-    };
+    /* ================= LIVE WORLD CLOCK ================= */
+    function updateLiveClock() {
+      try {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: selectedTimezone,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: use12HourFormat,
+          timeZoneName: 'short'
+        });
+        liveClockText.innerText = formatter.format(now);
+      } catch (e) {
+        liveClockText.innerText = new Date().toLocaleTimeString();
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
 
-    /* ===== SAFE DATE PARSER (NO UTC ISSUE) ===== */
-    function getSelectedDate() {
-      const [y, m, d] = dateInput.value.split("-").map(Number);
-      return new Date(y, m - 1, d); // local date
+    /* ================= THEME TOGGLE ================= */
+    function initTheme() {
+      const savedTheme = localStorage.getItem("panchangam_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      themeIcon.innerText = savedTheme === "dark" ? "🌙" : "☀️";
     }
 
-    async function loadData() {
+    themeToggleBtn.onclick = () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("panchangam_theme", next);
+      themeIcon.innerText = next === "dark" ? "🌙" : "☀️";
+    };
+    initTheme();
 
+    /* ================= TIMEZONE SELECTION ================= */
+    if (selectedTimezone) {
+      timezoneSelect.value = selectedTimezone;
+    }
+
+    timezoneSelect.onchange = () => {
+      selectedTimezone = timezoneSelect.value;
+      localStorage.setItem("panchangam_tz", selectedTimezone);
+      updateInfoCards();
+      updateLiveClock();
+      renderCurrentData();
+    };
+
+    /* ================= TIME FORMAT TOGGLE ================= */
+    function setTimeFormat(is12h) {
+      use12HourFormat = is12h;
+      localStorage.setItem("panchangam_12h", is12h);
+      if (is12h) {
+        timeFormat12.classList.add("active");
+        timeFormat24.classList.remove("active");
+      } else {
+        timeFormat24.classList.add("active");
+        timeFormat12.classList.remove("active");
+      }
+      updateLiveClock();
+      renderCurrentData();
+    }
+
+    timeFormat24.onclick = () => setTimeFormat(false);
+    timeFormat12.onclick = () => setTimeFormat(true);
+    if (use12HourFormat) setTimeFormat(true);
+
+    /* ================= BILINGUAL LANGUAGE SWITCHER ================= */
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.body.setAttribute("lang", lang);
+
+      if (lang === "ta") {
+        langBtnTa.classList.add("active");
+        langBtnEn.classList.remove("active");
+      } else {
+        langBtnEn.classList.add("active");
+        langBtnTa.classList.remove("active");
+      }
+
+      // Update static UI text
+      document.getElementById("pageTitle").innerText = t("pageTitle");
+      document.getElementById("pageSubtitle").innerText = t("pageSubtitle");
+      document.getElementById("lblDate").innerText = t("lblDate");
+      document.getElementById("lblTimezone").innerText = t("lblTimezone");
+      btnShowText.innerText = t("btnShow");
+      document.getElementById("lblLang").innerText = t("lblLang");
+      document.getElementById("lblInfoDay").innerText = t("lblInfoDay");
+      document.getElementById("lblInfoAyanamsam").innerText = t("lblInfoAyanamsam");
+      document.getElementById("lblInfoTz").innerText = t("lblInfoTz");
+      document.getElementById("lblInfoTransits").innerText = t("lblInfoTransits");
+      document.getElementById("txtTransitTitle").innerText = t("transitTitle");
+      document.getElementById("txtTableView").innerText = t("txtTableView");
+      document.getElementById("txtCardView").innerText = t("txtCardView");
+      document.getElementById("txtCopy").innerText = t("txtCopy");
+      document.getElementById("txtBackToTop").innerText = t("txtBackToTop");
+      document.getElementById("txtAllPlanets").innerText = t("txtAllPlanets");
+
+      // Update Chip labels
+      document.querySelectorAll(".chip-label").forEach(el => {
+        const val = el.getAttribute(`data-${lang}`);
+        if (val) el.innerText = val;
+      });
+
+      // Update Table Headers
+      const hdrs = t("headers");
+      document.getElementById("thPlanet").innerText = hdrs[0];
+      document.getElementById("thDMS").innerText = hdrs[1];
+      document.getElementById("thSign").innerText = hdrs[2];
+      document.getElementById("thStar").innerText = hdrs[3];
+      document.getElementById("thSub").innerText = hdrs[4];
+      document.getElementById("thSSB").innerText = hdrs[5] + " ★";
+      document.getElementById("thSTime").innerText = hdrs[6];
+
+      updateInfoCards();
+      renderCurrentData();
+    }
+
+    langBtnTa.onclick = () => setLanguage("ta");
+    langBtnEn.onclick = () => setLanguage("en");
+
+    /* ================= VIEW MODE SWITCHER ================= */
+    btnTableView.onclick = () => {
+      currentViewMode = "table";
+      btnTableView.classList.add("active");
+      btnCardView.classList.remove("active");
+      tableViewContainer.style.display = "block";
+      cardsViewContainer.style.display = "none";
+    };
+
+    btnCardView.onclick = () => {
+      currentViewMode = "cards";
+      btnCardView.classList.add("active");
+      btnTableView.classList.remove("active");
+      tableViewContainer.style.display = "none";
+      cardsViewContainer.style.display = "grid";
+    };
+
+    /* ================= PLANET FILTER CHIPS ================= */
+    planetChipsContainer.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip-btn");
+      if (!chip) return;
+      const planet = chip.getAttribute("data-planet");
+      if (!planet) return;
+
+      document.querySelectorAll("#planetChipsContainer .chip-btn").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      selectedPlanetFilter = planet;
+      renderCurrentData();
+    });
+
+    /* ================= SEARCH FILTER ================= */
+    searchInput.addEventListener("input", () => {
+      renderCurrentData();
+    });
+
+    /* ================= DATA LOADING & MONTH-TO-MONTH AUTO SYNC ================= */
+    /**
+     * Converts YYYY-MM-DD input date to DD-MM-YYYY format
+     */
+    function formatInputToDataDate(val) {
+      if (!val) return "";
+      const [y, m, d] = val.split("-");
+      return `${d.padStart(2, '0')}-${m.padStart(2, '0')}-${y}`;
+    }
+
+    /**
+     * Converts DD-MM-YYYY data date to YYYY-MM-DD input format
+     */
+    function formatDataToInputDate(val) {
+      if (!val) return "";
+      const [d, m, y] = val.split("-");
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    }
+
+    async function fetchPanchangamData() {
+      if (cachedData) return cachedData;
+
+      showBtn.disabled = true;
+      btnShowText.innerHTML = `<span class="loading-spinner"></span>`;
+
+      try {
+        const response = await fetch("panchangam_2026.json");
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+        const data = await response.json();
+        cachedData = data;
+
+        // Index data by Date
+        dataByDate.clear();
+        data.forEach(row => {
+          if (!row.Date) return;
+          if (!dataByDate.has(row.Date)) {
+            dataByDate.set(row.Date, []);
+          }
+          dataByDate.get(row.Date).push(row);
+        });
+
+        // Sort all unique dates chronologically
+        availableDatesList = Array.from(dataByDate.keys()).sort((a, b) => {
+          const [da, ma, ya] = a.split('-').map(Number);
+          const [db, mb, yb] = b.split('-').map(Number);
+          return (ya * 10000 + ma * 100 + da) - (yb * 10000 + mb * 100 + db);
+        });
+
+        if (availableDatesList.length > 0) {
+          const firstDate = availableDatesList[0];
+          const lastDate = availableDatesList[availableDatesList.length - 1];
+          dateInput.min = formatDataToInputDate(firstDate);
+          dateInput.max = formatDataToInputDate(lastDate);
+
+          // If dateInput has no value yet, pick today or the first date
+          if (!dateInput.value) {
+            const today = new Date();
+            const todayStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+            if (dataByDate.has(todayStr)) {
+              dateInput.value = formatDataToInputDate(todayStr);
+            } else {
+              dateInput.value = formatDataToInputDate(firstDate);
+            }
+          }
+        }
+
+        return cachedData;
+      } catch (err) {
+        console.error("Failed to load panchangam_2026.json:", err);
+        tbody.innerHTML = `<tr><td colspan="7" class="state-message-row" style="color:var(--accent-rose);">❌ ${t('error')}</td></tr>`;
+        throw err;
+      } finally {
+        showBtn.disabled = false;
+        btnShowText.innerText = t('btnShow');
+      }
+    }
+
+    /* ================= DATE STEPPERS ================= */
+    prevDayBtn.onclick = () => {
+      if (availableDatesList.length === 0) return;
+      const currentSel = formatInputToDataDate(dateInput.value);
+      const idx = availableDatesList.indexOf(currentSel);
+      if (idx > 0) {
+        dateInput.value = formatDataToInputDate(availableDatesList[idx - 1]);
+        loadSelectedDate();
+      }
+    };
+
+    nextDayBtn.onclick = () => {
+      if (availableDatesList.length === 0) return;
+      const currentSel = formatInputToDataDate(dateInput.value);
+      const idx = availableDatesList.indexOf(currentSel);
+      if (idx !== -1 && idx < availableDatesList.length - 1) {
+        dateInput.value = formatDataToInputDate(availableDatesList[idx + 1]);
+        loadSelectedDate();
+      }
+    };
+
+    dateInput.onchange = () => {
+      loadSelectedDate();
+    };
+
+    showBtn.onclick = () => {
+      loadSelectedDate();
+    };
+
+    /* ================= MAIN DATA LOADER FOR SELECTED DATE ================= */
+    async function loadSelectedDate() {
       if (!dateInput.value) {
         alert(t('selectDate'));
         return;
       }
 
-      const dateObj = getSelectedDate();
+      await fetchPanchangamData();
+      const selDate = formatInputToDataDate(dateInput.value);
+      const rows = dataByDate.get(selDate);
 
-      btn.classList.add("loading");
-      btn.innerHTML = `<span class="loader"></span>`;
-
-      tbody.innerHTML =
-        `<tr><td colspan="7" class="loading-row">${t('loading')}</td></tr>`;
-      info.innerHTML = "";
-
-      try {
-        const selDate =
-          `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
-
-        const res = await fetch("panchangam_2026.json");
-        const data = await res.json();
-
-        const rows = data.filter(r => r.Date === selDate);
-
-        if (rows.length === 0) {
-          tbody.innerHTML =
-            `<tr><td colspan="7">${t('noData')} ${selDate}</td></tr>`;
-          return;
-        }
-
-        const dayTranslated = translateValue(rows[0].Day, dayMap);
-        info.innerText =
-          `📅 ${dayTranslated} | 🕉️ ${t('ayanamsam')}: ${rows[0].Ayanamsam}`;
-
-        tbody.innerHTML = "";
-        rows.forEach(r => {
-          tbody.innerHTML += `
-      <tr>
-        <td>${translateValue(r.Planet, planetMap) || ""}</td>
-        <td>${r["D.M.S"]}</td>
-        <td>${translateValue(r.Sign, signMap)}</td>
-        <td>${translateValue(r.Star, planetMap)}</td>
-        <td>${translateValue(r.Sub, planetMap)}</td>
-        <td>${translateValue(r.SSB, planetMap)}</td>
-        <td>${r["S.Time"] || ""}</td>
-      </tr>`;
-        });
-
-      } catch (e) {
-        tbody.innerHTML =
-          `<tr><td colspan="7">${t('error')}</td></tr>`;
-      } finally {
-        btn.classList.remove("loading");
-        btn.innerHTML = t('show');
+      if (!rows || rows.length === 0) {
+        currentRows = [];
+        currentDayData = null;
+        updateInfoCards();
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="state-message-row">
+              <span class="empty-state-icon">⚠️</span>
+              <strong>${t('noData')} ${selDate}</strong><br>
+              <span style="font-size:0.8rem; margin-top:6px; display:inline-block;">
+                ${t('availableRange')} ${availableDatesList[0]} to ${availableDatesList[availableDatesList.length - 1]}
+              </span>
+            </td>
+          </tr>`;
+        cardsViewContainer.innerHTML = `
+          <div class="planet-card" style="grid-column: 1 / -1; text-align:center; padding:30px;">
+            <span class="empty-state-icon">⚠️</span>
+            <strong>${t('noData')} ${selDate}</strong>
+          </div>`;
+        return;
       }
+
+      // Fill in implicit parent planet for rows where Planet field is empty
+      let currentPlanetName = "";
+      currentRows = rows.map((r) => {
+        if (r.Planet && r.Planet.trim()) {
+          currentPlanetName = r.Planet.trim();
+        }
+        return {
+          ...r,
+          parentPlanet: currentPlanetName,
+          isPlanetStart: Boolean(r.Planet && r.Planet.trim())
+        };
+      });
+
+      currentDayData = currentRows[0];
+      updateInfoCards();
+      renderCurrentData();
     }
 
-    /* ===== INITIALIZE ===== */
-    updateUIStrings();
-    btn.onclick = loadData;
-  </script>
+    /* ================= UPDATE METRIC INFO CARDS ================= */
+    function updateInfoCards() {
+      if (!currentDayData) {
+        valInfoDay.innerText = "—";
+        valInfoAyanamsam.innerText = "—";
+        valInfoTransits.innerText = "0";
+        return;
+      }
 
+      const dayStr = translateDay(currentDayData.Day);
+      valInfoDay.innerText = dayStr;
+      valInfoAyanamsam.innerText = currentDayData.Ayanamsam || "—";
+
+      const tzOpt = timezoneSelect.options[timezoneSelect.selectedIndex];
+      valInfoTz.innerText = tzOpt ? tzOpt.text.split('•')[0].trim() : selectedTimezone;
+      valInfoTransits.innerText = currentRows.length;
+    }
+
+    /* ================= RENDER TABLE & CARD VIEWS ================= */
+    function renderCurrentData() {
+      if (!currentRows || currentRows.length === 0) return;
+
+      const query = (searchInput.value || "").toLowerCase().trim();
+
+      // Filter rows based on Selected Planet Chip and Search Input
+      const filtered = currentRows.filter(r => {
+        // Planet filter match
+        if (selectedPlanetFilter !== "ALL") {
+          const filterNorm = selectedPlanetFilter.replace("-(வ)", "");
+          if (!r.parentPlanet.startsWith(filterNorm)) return false;
+        }
+
+        // Search query match
+        if (query) {
+          const searchStr = `${r.parentPlanet} ${r.Planet} ${translatePlanet(r.parentPlanet)} ${r.Sign} ${translateSign(r.Sign)} ${r.Star} ${translatePlanet(r.Star)} ${r.Sub} ${translatePlanet(r.Sub)} ${r.SSB} ${translatePlanet(r.SSB)} ${r['D.M.S']} ${r['S.Time']}`.toLowerCase();
+          if (!searchStr.includes(query)) return false;
+        }
+
+        return true;
+      });
+
+      // Update badge indicator
+      const activeFilterBadge = document.getElementById("activeFilterBadge");
+      if (selectedPlanetFilter !== "ALL" || query) {
+        activeFilterBadge.style.display = "inline-flex";
+        activeFilterBadge.innerText = `${filtered.length} matching`;
+      } else {
+        activeFilterBadge.style.display = "none";
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="state-message-row">🔍 No transits match your current filter.</td></tr>`;
+        cardsViewContainer.innerHTML = `<div class="planet-card" style="grid-column: 1 / -1; text-align:center; padding:30px;">🔍 No transits match your filter.</div>`;
+        return;
+      }
+
+      // 1. Render Table Rows
+      let tableHtml = "";
+      filtered.forEach((r) => {
+        const planetDisplay = r.Planet ? translatePlanet(r.Planet) : "";
+        const planetClass = planetClasses[r.parentPlanet] || "planet-cell-badge";
+        const signGlyph = signGlyphs[r.Sign] || "✨";
+        const signText = translateSign(r.Sign);
+        const starText = translatePlanet(r.Star);
+        const subText = translatePlanet(r.Sub);
+        const ssbText = translatePlanet(r.SSB);
+
+        // Convert S.Time to active timezone
+        const timeInfo = formatTransitTimeInTimezone(r.Date, r["S.Time"], selectedTimezone, use12HourFormat);
+
+        const rowClass = r.isPlanetStart ? 'planet-start-row' : '';
+
+        // Planet cell markup
+        let planetCellContent = "";
+        if (r.Planet) {
+          const isRetro = r.Planet.includes("(வ)") || r.Planet.includes("(R)");
+          const baseName = r.Planet.replace("-(வ)", "").replace(" (R)", "");
+          const icon = planetIcons[baseName] || planetIcons[r.Planet] || "🪐";
+          planetCellContent = `
+            <span class="planet-cell-badge ${planetClass}">
+              <span>${icon}</span>
+              <strong>${planetDisplay}</strong>
+              ${isRetro ? `<span class="retro-badge">${t('retrograde')}</span>` : ''}
+            </span>`;
+        } else {
+          planetCellContent = `<span style="color:var(--text-muted); font-size:0.8rem; padding-left:14px;">↳</span>`;
+        }
+
+        // S.Time cell markup
+        let timeCellContent = "";
+        if (timeInfo.isStart) {
+          timeCellContent = `<span style="color:var(--text-muted); font-size:0.8rem;">— (${timeInfo.formatted})</span>`;
+        } else {
+          timeCellContent = `
+            <div class="time-container">
+              <span class="time-badge">
+                <span>🕒</span>
+                <span>${timeInfo.formatted}</span>
+              </span>
+              ${timeInfo.shiftBadge}
+            </div>`;
+        }
+
+        tableHtml += `
+          <tr class="${rowClass}">
+            <td>${planetCellContent}</td>
+            <td class="dms-text">${r["D.M.S"]}</td>
+            <td><span class="sign-badge"><span>${signGlyph}</span> <strong>${signText}</strong></span></td>
+            <td><span class="lord-badge">${starText}</span></td>
+            <td><span class="lord-badge">${subText}</span></td>
+            <td><span class="ssb-badge">★ ${ssbText}</span></td>
+            <td>${timeCellContent}</td>
+          </tr>`;
+      });
+      tbody.innerHTML = tableHtml;
+
+      // 2. Render Mobile Cards View (Grouped by Planet)
+      const planetGroups = new Map();
+      filtered.forEach(r => {
+        if (!planetGroups.has(r.parentPlanet)) {
+          planetGroups.set(r.parentPlanet, []);
+        }
+        planetGroups.get(r.parentPlanet).push(r);
+      });
+
+      let cardsHtml = "";
+      planetGroups.forEach((rowsInGroup, pName) => {
+        const baseName = pName.replace("-(வ)", "").replace(" (R)", "");
+        const isRetro = pName.includes("(வ)") || pName.includes("(R)");
+        const icon = planetIcons[baseName] || planetIcons[pName] || "🪐";
+        const displayName = translatePlanet(pName);
+        const pClass = planetClasses[pName] || "planet-sun";
+
+        let stepsHtml = "";
+        rowsInGroup.forEach((r, idx) => {
+          const timeInfo = formatTransitTimeInTimezone(r.Date, r["S.Time"], selectedTimezone, use12HourFormat);
+          const signGlyph = signGlyphs[r.Sign] || "✨";
+          const signText = translateSign(r.Sign);
+          const starText = translatePlanet(r.Star);
+          const subText = translatePlanet(r.Sub);
+          const ssbText = translatePlanet(r.SSB);
+
+          stepsHtml += `
+            <div class="timeline-step">
+              <div class="timeline-time-col">
+                ${timeInfo.isStart
+              ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Day Start</span>`
+              : `<span class="time-badge" style="font-size:0.75rem; padding:2px 6px;">🕒 ${timeInfo.formatted}</span>`}
+                ${timeInfo.shiftBadge}
+              </div>
+              <div class="timeline-content-col">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="dms-text" style="font-size:0.8rem;">📍 ${r["D.M.S"]}</span>
+                  <span class="ssb-badge" style="font-size:0.78rem; padding:2px 7px;">★ SSB: ${ssbText}</span>
+                </div>
+                <div class="hierarchy-flow">
+                  <span class="flow-item" style="color:var(--accent-cyan);">${signGlyph} ${signText}</span>
+                  <span class="flow-sep">›</span>
+                  <span class="flow-item">Star: ${starText}</span>
+                  <span class="flow-sep">›</span>
+                  <span class="flow-item">Sub: ${subText}</span>
+                </div>
+              </div>
+            </div>`;
+        });
+
+        cardsHtml += `
+          <div class="planet-card">
+            <div class="planet-card-header">
+              <div class="card-planet-title ${pClass}" style="background:transparent; border:none; padding:0;">
+                <span>${icon}</span>
+                <span>${displayName}</span>
+                ${isRetro ? `<span class="retro-badge">${t('retrograde')}</span>` : ''}
+              </div>
+              <span class="card-transit-count">${rowsInGroup.length} transitions</span>
+            </div>
+            <div class="planet-card-body">
+              ${stepsHtml}
+            </div>
+          </div>`;
+      });
+      cardsViewContainer.innerHTML = cardsHtml;
+    }
+
+    /* ================= COPY TO CLIPBOARD ================= */
+    copyDataBtn.onclick = () => {
+      if (!currentRows || currentRows.length === 0) return;
+      const selDate = formatInputToDataDate(dateInput.value);
+      const tzName = timezoneSelect.options[timezoneSelect.selectedIndex].text;
+
+      let textOutput = `🪐 Planetary Transit Panchangam: ${selDate} (${translateDay(currentDayData.Day)})\n`;
+      textOutput += `🕉️ KB Ayanamsam: ${currentDayData.Ayanamsam} | Timezone: ${tzName}\n`;
+      textOutput += `------------------------------------------------------------\n`;
+      textOutput += `Planet\tD.M.S\tSign\tStar\tSub\tSSB\tS.Time\n`;
+      textOutput += `------------------------------------------------------------\n`;
+
+      currentRows.forEach(r => {
+        const timeInfo = formatTransitTimeInTimezone(r.Date, r["S.Time"], selectedTimezone, use12HourFormat);
+        const p = r.Planet || `  ${r.parentPlanet}`;
+        textOutput += `${p}\t${r["D.M.S"]}\t${r.Sign}\t${r.Star}\t${r.Sub}\t${r.SSB}\t${timeInfo.formatted}\n`;
+      });
+
+      navigator.clipboard.writeText(textOutput).then(() => {
+        const originalText = copyDataBtn.innerHTML;
+        copyDataBtn.innerHTML = `✅ ${t('copiedToast')}`;
+        setTimeout(() => copyDataBtn.innerHTML = originalText, 2200);
+      });
+    };
+
+    /* ================= SCROLL TO TOP ================= */
+    document.getElementById("btnScrollTop").onclick = () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    /* ================= INITIAL BOOTSTRAP ================= */
+    async function initApp() {
+      setLanguage(currentLang);
+      await fetchPanchangamData();
+      await loadSelectedDate();
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
 </body>
 
 </html>
